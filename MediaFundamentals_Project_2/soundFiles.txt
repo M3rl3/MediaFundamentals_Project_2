@@ -1,0 +1,5 @@
+../assets/sounds/sfx/arrow.wav
+../assets/sounds/sfx/air_raid.wav
+../assets/sounds/sfx/kick.wav
+../assets/sounds/sfx/tick.wav
+../assets/sounds/sfx/za_warudo.mp3
