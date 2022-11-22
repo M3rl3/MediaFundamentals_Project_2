@@ -190,10 +190,10 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
         break;
         case MOVING_LIGHT: {
             if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-                l -= 10.f;
+                l += 1.f;
             }
             if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-                l += 10.f;
+                l -= 1.f;
             }
         }
         break;
@@ -801,7 +801,7 @@ void Update() {
         std::stringstream ss;
         ss << " Camera: " << "(" << cameraEye.x << ", " << cameraEye.y << ", " << cameraEye.z << ")"
            << " Target: Index = " << object_index << ", MeshName: " << meshArray[object_index]->meshName << ", Position: (" << meshArray[object_index]->position.x << ", " << meshArray[object_index]->position.y << ", " << meshArray[object_index]->position.z << ")"
-           << " FPS: " << frameRate << " ms: " << frameTime << " GPU: " << renderer /*<< " " << l << " Light atten: " << x << ", " << y << ", " << z*/;
+           << " FPS: " << frameRate << " ms: " << frameTime << " GPU: " << renderer << l /*<< " Light atten: " << x << ", " << y << ", " << z*/;
 
         glfwSetWindowTitle(window, ss.str().c_str());
 
