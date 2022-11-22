@@ -28,7 +28,6 @@ GLint mvp_location = 0;
 GLuint shaderID = 0;
 
 cVAOManager* VAOMan;
-cSoundManager* soundMan;
 
 MeshInfo* tesla_cybertruck_mesh;
 SoundInfo* sounds_object;
@@ -291,10 +290,10 @@ void Render() {
 
     ReadFromFile();
 
-    //VAO Manager
+    // VAO Manager
     VAOMan = new cVAOManager();
     
-    //Scene
+    // Scene
     sModelDrawInfo long_highway;
     LoadModel(meshFiles[2], long_highway);
     if (!VAOMan->LoadModelIntoVAO("long_highway", long_highway, shaderID)) {

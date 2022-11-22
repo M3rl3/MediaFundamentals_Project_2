@@ -333,7 +333,6 @@ bool cSoundManager::PlaySounds(const std::string& sound_name, glm::vec3 position
 		std::cout << "FMOD playing sound(s) exit with error: " << FMOD_ErrorString(last_result) << std::endl;
 		return 1;
 	}
-	std::cout << "Music playing, yes?";
 
 	FMOD_VECTOR fmod_sound_position;
 	fmod_sound_position.x = position.x;
