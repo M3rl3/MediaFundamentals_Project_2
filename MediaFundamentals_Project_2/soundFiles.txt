@@ -1,5 +1,6 @@
-../assets/sounds/sfx/arrow.wav
-../assets/sounds/sfx/air_raid.wav
-../assets/sounds/sfx/kick.wav
-../assets/sounds/sfx/tick.wav
-../assets/sounds/sfx/za_warudo.mp3
+../assets/sounds/sfx/ambulance.wav
+../assets/sounds/sfx/horn.wav
+../assets/sounds/sfx/engine.wav
+../assets/sounds/sfx/truck_horn.wav
+../assets/sounds/sfx/chicken.wav
+../assets/sounds/sfx/my_dark_disquiet.mp3

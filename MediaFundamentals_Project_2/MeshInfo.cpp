@@ -16,6 +16,8 @@ MeshInfo::~MeshInfo() {
 
 }
 
+
+
 FMOD::Channel* MeshInfo::GetAttachedSound()
 {
 	return attached_sound;
@@ -24,4 +26,8 @@ FMOD::Channel* MeshInfo::GetAttachedSound()
 void MeshInfo::SetAttachedSound(FMOD::Channel* channel)
 {
 	attached_sound = channel;
+}
+
+glm::vec3 MeshInfo::GetPosition() {
+	return position;
 }

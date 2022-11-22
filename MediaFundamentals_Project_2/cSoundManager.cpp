@@ -328,32 +328,25 @@ bool cSoundManager::PlaySounds(const std::string& sound_name, glm::vec3 position
 		return false;
 	}
 
-	if (!fmod_sys->playSound(sound->second, nullptr, true, channel))
-	{
-		return false;
+	last_result = fmod_sys->playSound(sound->second, nullptr, true, channel);
+	if (last_result != FMOD_OK) {
+		std::cout << "FMOD playing sound(s) exit with error: " << FMOD_ErrorString(last_result) << std::endl;
+		return 1;
 	}
+	std::cout << "Music playing, yes?";
 
 	FMOD_VECTOR fmod_sound_position;
 	fmod_sound_position.x = position.x;
 	fmod_sound_position.y = position.y;
 	fmod_sound_position.z = position.z;
 
-	if (!(*channel)->set3DAttributes(&fmod_sound_position, nullptr))
-	{
-		return false;
-	}
+	(*channel)->set3DAttributes(&fmod_sound_position, nullptr);
 
 	//min distance to hear @ max volume
 	//max distance where the attenuation stops
-	if (!(*channel)->set3DMinMaxDistance(max_distance, 10000.0f))
-	{
-		return false;
-	}
+	(*channel)->set3DMinMaxDistance(max_distance, 10000.0f);
 
-	if (!(*channel)->setPaused(false))
-	{
-		return false;
-	}
+	(*channel)->setPaused(false);
 
 	return true;
 }

@@ -4,3 +4,8 @@
 ../assets/meshes/long_sidewalk.ply
 ../assets/meshes/tesla_cybertruck_downscaled.ply
 ../assets/meshes/street_lamp.ply
+../assets/meshes/lotus_esprit.ply
+../assets/meshes/ambulance_downscaled.ply
+../assets/meshes/truck_downscaled.ply
+../assets/meshes/sol_woodsman.ply
+../assets/meshes/chicken.ply

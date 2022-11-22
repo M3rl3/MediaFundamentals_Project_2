@@ -31,4 +31,5 @@ public:
 
 	FMOD::Channel* GetAttachedSound();
 	void SetAttachedSound(FMOD::Channel* channel);
+	glm::vec3 GetPosition();
 };

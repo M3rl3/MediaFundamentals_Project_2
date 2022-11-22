@@ -19,6 +19,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <cmath>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -105,7 +106,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
     {
         case MOVING_CAMERA:
         {
-            const float CAMERA_MOVE_SPEED = 0.f;
+            const float CAMERA_MOVE_SPEED = 1.f;
             if (key == GLFW_KEY_A)     // Left
             {
                 ::cameraEye.x -= CAMERA_MOVE_SPEED;
@@ -172,7 +173,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
             if (key == GLFW_KEY_2 && action == GLFW_PRESS)
             {
                 object_index++;
-                if (object_index > meshArray.size()-1) {
+                if (object_index > meshArray.size() - 1) {
                     object_index = 0;
                 }
                 cameraTarget = meshArray[object_index]->position;
@@ -181,7 +182,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
             {
                 object_index--;
                 if (object_index < 0) {
-                    object_index = 0;
+                    object_index = meshArray.size() - 1;
                 }
                 cameraTarget = meshArray[object_index]->position;
             }    
@@ -252,8 +253,6 @@ void Initialize() {
     sounds_object = new SoundInfo();
 
     sounds_object->Initalize();
-    //soundMan = sounds_object->soundMan;
-    //soundMan->Initialize();
     
     x = 0.1f; y = 0.5f; z = 20.f;
 }
@@ -569,14 +568,109 @@ void Render() {
     tesla_cybertruck_mesh->RGBAColour = glm::vec4(25.f, 25.f, 25.f, 1.f);
     tesla_cybertruck_mesh->useRGBAColour = true;
     
-    FMOD::Channel* channel;
-    //sounds_object->GetSoundManager()->PlaySounds("za-warudo", glm::vec3(), 0.1f, &channel);
-    sounds_object->GetSoundManager()->PlaySounds("tick-tock", "sounds");
+    //sounds_object->GetSoundManager()->PlaySounds("tick-tock", "sounds");
     //tesla_cybertruck_mesh->SetAttachedSound(channel);
     meshArray.push_back(tesla_cybertruck_mesh);
+    
+    sModelDrawInfo lotus_esprit;
+    LoadModel(meshFiles[6], lotus_esprit);
+    if (!VAOMan->LoadModelIntoVAO("lotus_esprit", lotus_esprit, shaderID)) {
+        std::cerr << "Could not load model into VAO" << std::endl;
+    }
+    MeshInfo* lotus_esprit_mesh = new MeshInfo();
+    lotus_esprit_mesh->meshName = "lotus_esprit";
+    lotus_esprit_mesh->isWireframe = wireFrame;
+    lotus_esprit_mesh->RGBAColour = glm::vec4(65.f, 10.f, 200.f, 1.f);
+    lotus_esprit_mesh->useRGBAColour = true;
+    meshArray.push_back(lotus_esprit_mesh);
+    
+    sModelDrawInfo ambulance;
+    LoadModel(meshFiles[7], ambulance);
+    if (!VAOMan->LoadModelIntoVAO("ambulance", ambulance, shaderID)) {
+        std::cerr << "Could not load model into VAO" << std::endl;
+    }
+    MeshInfo* ambulance_mesh = new MeshInfo();
+    ambulance_mesh->meshName = "ambulance";
+    ambulance_mesh->isWireframe = wireFrame;
+    ambulance_mesh->RGBAColour = glm::vec4(200.f, 10.f, 10.f, 1.f);
+    ambulance_mesh->useRGBAColour = true;
+    meshArray.push_back(ambulance_mesh);
+    
+    sModelDrawInfo truck;
+    LoadModel(meshFiles[8], truck);
+    if (!VAOMan->LoadModelIntoVAO("truck", truck, shaderID)) {
+        std::cerr << "Could not load model into VAO" << std::endl;
+    }
+    MeshInfo* truck_mesh = new MeshInfo();
+    truck_mesh->meshName = "truck";
+    truck_mesh->isWireframe = wireFrame;
+    truck_mesh->RGBAColour = glm::vec4(1.f, 40.f, 32.f, 1.f);
+    truck_mesh->useRGBAColour = true;
+    meshArray.push_back(truck_mesh);
+    
+    sModelDrawInfo sol_woodsman;
+    LoadModel(meshFiles[9], sol_woodsman);
+    if (!VAOMan->LoadModelIntoVAO("sol_woodsman", sol_woodsman, shaderID)) {
+        std::cerr << "Could not load model into VAO" << std::endl;
+    }
+    MeshInfo* sol_woodsman_mesh = new MeshInfo();
+    sol_woodsman_mesh->meshName = "sol_woodsman";
+    sol_woodsman_mesh->isWireframe = wireFrame;
+    sol_woodsman_mesh->RGBAColour = glm::vec4(10.f, 10.f, 200.f, 1.f);
+    sol_woodsman_mesh->useRGBAColour = true;
+    meshArray.push_back(sol_woodsman_mesh);
+    
+    sModelDrawInfo chicken;
+    LoadModel(meshFiles[10], chicken);
+    if (!VAOMan->LoadModelIntoVAO("chicken", chicken, shaderID)) {
+        std::cerr << "Could not load model into VAO" << std::endl;
+    }
+    MeshInfo* chicken_mesh = new MeshInfo();
+    chicken_mesh->meshName = "chicken";
+    chicken_mesh->isWireframe = wireFrame;
+    chicken_mesh->RGBAColour = glm::vec4(10.f, 10.f, 200.f, 1.f);
+    chicken_mesh->useRGBAColour = false;
+    meshArray.push_back(chicken_mesh);
 
     //reads scene descripion files for positioning and other info
-    ReadSceneDescription(); 
+    ReadSceneDescription();
+
+    // FMOD channel init
+    {
+        FMOD::Channel* channel;
+        sounds_object->GetSoundManager()->PlaySounds("engine", tesla_cybertruck_mesh->position, 0.05f, &channel);
+        tesla_cybertruck_mesh->SetAttachedSound(channel);
+    }
+    
+    {
+        FMOD::Channel* channel;
+        sounds_object->GetSoundManager()->PlaySounds("ambulance", ambulance_mesh->position, 0.025f, &channel);
+        ambulance_mesh->SetAttachedSound(channel);
+    }
+
+    {
+        FMOD::Channel* channel;
+        sounds_object->GetSoundManager()->PlaySounds("car_horn", lotus_esprit_mesh->position, 0.1f, &channel);
+        lotus_esprit_mesh->SetAttachedSound(channel);
+    }
+
+    {
+        FMOD::Channel* channel;
+        sounds_object->GetSoundManager()->PlaySounds("truck_horn", truck_mesh->position, 0.05f, &channel);
+        truck_mesh->SetAttachedSound(channel);
+    }
+
+    {
+        FMOD::Channel* channel;
+        sounds_object->GetSoundManager()->PlaySounds("chicken", chicken_mesh->position, 0.05f, &channel);
+        chicken_mesh->SetAttachedSound(channel);
+    }
+    
+    {
+        FMOD::Channel* channel;
+        sounds_object->GetSoundManager()->PlaySounds("my_dark_disquiet", sol_woodsman_mesh->position, 0.05f, &channel);
+        sol_woodsman_mesh->SetAttachedSound(channel);
+    }
 }
 
 void Update() {
@@ -610,10 +704,12 @@ void Update() {
     GLint eyeLocationLocation = glGetUniformLocation(shaderID, "eyeLocation");
     glUniform4f(eyeLocationLocation, cameraEye.x, cameraEye.y, cameraEye.z, 1.f);
 
+    // Drive Car
     if (theEditMode == DRIVE_CAR) {
         cameraTarget = tesla_cybertruck_mesh->position;
     }
 
+    // Model translation and orientation in 3D space
     for (int i = 0; i < meshArray.size(); i++) {
 
         MeshInfo* currentMesh = meshArray[i];
@@ -644,6 +740,7 @@ void Update() {
         glm::mat4 modelInverse = glm::inverse(glm::transpose(model));
         glUniformMatrix4fv(modelInverseLocation, 1, GL_FALSE, glm::value_ptr(modelInverse));
 
+        // WireFame
         if (currentMesh->isWireframe) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
@@ -658,6 +755,7 @@ void Update() {
 
         GLint useRGBAColourLocation = glGetUniformLocation(shaderID, "useRGBAColour");
 
+        // RGBA color for lighting
         if (currentMesh->useRGBAColour)
         {
             glUniform1f(useRGBAColourLocation, (GLfloat)GL_TRUE);
@@ -666,40 +764,44 @@ void Update() {
         {
             glUniform1f(useRGBAColourLocation, (GLfloat)GL_FALSE);
         }
+        
+        // FMOD sound stuff
+        sounds_object->GetSoundManager()->Tick(cameraEye);
+        sounds_object->GetSoundManager()->UpdateSoundPosition(currentMesh->GetAttachedSound(), currentMesh->GetPosition());
 
-        /*sounds_object->GetSoundManager()->PlaySounds("tick-tock", "sounds");*/
-        //sounds_object->GetSoundManager()->UpdateSoundPosition(tesla_cybertruck_mesh->GetAttachedSound(), tesla_cybertruck_mesh->position);
-
+        // Model Draw
         sModelDrawInfo modelInfo;
-        if (VAOMan->FindDrawInfoByModelName(meshArray[i]->meshName, modelInfo)) {
+        if (VAOMan->FindDrawInfoByModelName(currentMesh->meshName, modelInfo)) {
 
             glBindVertexArray(modelInfo.VAO_ID);
             glDrawElements(GL_TRIANGLES, modelInfo.numberOfIndices, GL_UNSIGNED_INT, (void*)0);
             glBindVertexArray(0);
         }
         else {
-            std::cerr << "Model not found." << std::endl;
+            std::cout << "Model not found." << std::endl;
         }
     }
 
     glfwSwapBuffers(window);
     glfwPollEvents();
 
-    //const GLubyte* vendor = glad_glGetString(GL_VENDOR); // Returns the vendor
+    const GLubyte* vendor = glad_glGetString(GL_VENDOR); // Returns the vendor
     const GLubyte* renderer = glad_glGetString(GL_RENDERER); // Returns a hint to the model
 
+    // Framerate and frametime
     currentTime = glfwGetTime();
     timeDiff = currentTime - beginTime;
     frameCount++;
 
+    // Output debug info to titlebar
     if (timeDiff >= 1.f / 30.f) {
         std::string frameRate = std::to_string((1.f / timeDiff) * frameCount);
         std::string frameTime = std::to_string((timeDiff / frameCount) * 1000);
 
         std::stringstream ss;
         ss << " Camera: " << "(" << cameraEye.x << ", " << cameraEye.y << ", " << cameraEye.z << ")"
-            << " Target: Index = " << object_index << ", MeshName: " << meshArray[object_index]->meshName << ", Position: (" << meshArray[object_index]->position.x << ", " << meshArray[object_index]->position.y << ", " << meshArray[object_index]->position.z << ")"
-            << " FPS: " << frameRate << " ms: " << frameTime << " GPU: " << renderer << " " << l << " Light atten: " << x << ", " << y << ", " << z;
+           << " Target: Index = " << object_index << ", MeshName: " << meshArray[object_index]->meshName << ", Position: (" << meshArray[object_index]->position.x << ", " << meshArray[object_index]->position.y << ", " << meshArray[object_index]->position.z << ")"
+           << " FPS: " << frameRate << " ms: " << frameTime << " GPU: " << renderer /*<< " " << l << " Light atten: " << x << ", " << y << ", " << z*/;
 
         glfwSetWindowTitle(window, ss.str().c_str());
 
@@ -708,9 +810,22 @@ void Update() {
     }
 }
 
+// Gracefully close everything down
 void Shutdown() {
 
+    sounds_object->Shutdown();
+    delete sounds_object;
+
+    delete tesla_cybertruck_mesh;
+    delete VAOMan;
+
+    meshFiles.clear();
+    meshArray.clear();
+    
     glfwDestroyWindow(window);
+    window = nullptr;
+    delete window;
+
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }

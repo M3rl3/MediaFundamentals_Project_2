@@ -1,4 +1,4 @@
-29
+34
 
 long_highway 
 position 0.0 -1.0 0.0
@@ -141,6 +141,31 @@ rotation 0.0 67.5 0.0
 scale 1.0
 
 tesla_cybertruck
-position -88.0 2.0 0.0
+position -10.0 2.0 5.0
 rotation 0.0 -67.55 0.0
 scale 1.0
+
+lotus_esprit
+position 70.0 0.0 -5.0
+rotation 0.0 67.55 0.0
+scale 3.0
+
+ambulance
+position -76.0 2.0 4.5
+rotation 0.0 -67.55 0.0
+scale 1.0
+
+truck
+position -53.0 4.0 -5.5
+rotation 0.0 67.55 0.0
+scale 1.0
+
+sol_woodsman
+position 45.0 0.0 5.5
+rotation 0.0 67.55 0.0
+scale 3.0
+
+chicken
+position 21.0 1.0 -10.5
+rotation 0.0 -67.55 0.0
+scale 3.0

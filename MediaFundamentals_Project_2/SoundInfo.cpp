@@ -47,15 +47,19 @@ void SoundInfo::CreateChannels() {
 void SoundInfo::LoadSounds() {
 	constexpr int flags = FMOD_DEFAULT | FMOD_3D | FMOD_LOOP_NORMAL;
 	
-	soundMan->LoadSounds("arrow", soundFiles[0], flags);
-	soundMan->LoadSounds("air_raid", soundFiles[1], flags);
-	soundMan->LoadSounds("kick", soundFiles[2], flags);
-	soundMan->LoadSounds("tick-tock", soundFiles[3], flags);
-	soundMan->LoadSounds("za-warudo", soundFiles[4], flags);
+	soundMan->LoadSounds("ambulance", soundFiles[0], flags);
+	soundMan->LoadSounds("car_horn", soundFiles[1], flags);
+	soundMan->LoadSounds("engine", soundFiles[2], flags);
+	soundMan->LoadSounds("truck_horn", soundFiles[3], flags);
+	soundMan->LoadSounds("chicken", soundFiles[4], flags);
+	soundMan->LoadSounds("my_dark_disquiet", soundFiles[5], flags);
 }
 
 void SoundInfo::Shutdown() {
+	soundFiles.clear();
+
 	soundMan->ShutDown();
+	delete soundMan;	
 }
 
 void SoundInfo::StopAllSounds() {
