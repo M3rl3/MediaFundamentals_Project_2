@@ -13,7 +13,6 @@ public:
 	~SoundInfo();
 
 	void Initalize();
-	void Update();
 	void Shutdown();
 
 	void CreateChannels();

@@ -13,10 +13,8 @@ MeshInfo::MeshInfo() {
 }
 
 MeshInfo::~MeshInfo() {
-
+	delete attached_sound;
 }
-
-
 
 FMOD::Channel* MeshInfo::GetAttachedSound()
 {

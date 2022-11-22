@@ -632,7 +632,7 @@ void Render() {
     chicken_mesh->useRGBAColour = false;
     meshArray.push_back(chicken_mesh);
 
-    //reads scene descripion files for positioning and other info
+    // Reads scene descripion files for positioning and other info
     ReadSceneDescription();
 
     // FMOD channel init
@@ -675,7 +675,7 @@ void Render() {
 
 void Update() {
 
-    //MVP
+    // MVP
     glm::mat4x4 model, view, projection;
     glm::vec3 upVector = glm::vec3(0.f, 1.f, 0.f);
 
@@ -684,7 +684,7 @@ void Update() {
     GLint projectionLocation = glGetUniformLocation(shaderID, "Projection");
     GLint modelInverseLocation = glGetUniformLocation(shaderID, "ModelInverse");
     
-    //Lighting
+    // Lighting
     ManageLights();
 
     float ratio;
@@ -785,7 +785,7 @@ void Update() {
     glfwSwapBuffers(window);
     glfwPollEvents();
 
-    const GLubyte* vendor = glad_glGetString(GL_VENDOR); // Returns the vendor
+    const GLubyte* vendor = glad_glGetString(GL_VENDOR);     // Returns the vendor
     const GLubyte* renderer = glad_glGetString(GL_RENDERER); // Returns a hint to the model
 
     // Framerate and frametime
@@ -814,9 +814,13 @@ void Update() {
 void Shutdown() {
 
     sounds_object->Shutdown();
+    sounds_object = nullptr;
     delete sounds_object;
 
+    tesla_cybertruck_mesh = nullptr;
     delete tesla_cybertruck_mesh;
+
+    VAOMan = nullptr;
     delete VAOMan;
 
     meshFiles.clear();
