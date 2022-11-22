@@ -252,7 +252,7 @@ void Initialize() {
 
     sounds_object = new SoundInfo();
 
-    sounds_object->Initalize();
+    sounds_object->Initialize();
     
     x = 0.1f; y = 0.5f; z = 20.f;
 }

@@ -12,7 +12,7 @@ public:
 	SoundInfo();
 	~SoundInfo();
 
-	void Initalize();
+	void Initialize();
 	void Shutdown();
 
 	void CreateChannels();

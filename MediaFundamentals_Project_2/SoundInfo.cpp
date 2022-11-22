@@ -13,7 +13,7 @@ SoundInfo::~SoundInfo() {
 
 }
 
-void SoundInfo::Initalize() {
+void SoundInfo::Initialize() {
 	if (!soundMan->Initialize()) {
 		std::cout << "Error: Failed to initalize FMOD." << std::endl;
 	}
