@@ -24,6 +24,7 @@
     <ProjectGuid>{ff0777ad-e9d5-4050-bc79-7fbef11d6446}</ProjectGuid>
     <RootNamespace>MediaFundamentalsProject2</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>MediaFundamentals_Project_3</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
