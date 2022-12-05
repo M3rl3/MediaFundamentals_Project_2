@@ -251,7 +251,7 @@ void Initialize() {
 
     sounds_object = new SoundInfo();
 
-    sounds_object->Initialize();
+    sounds_object->Initialize(window, glsl_version);
     
     x = 0.1f; y = 0.5f; z = 20.f;
 }
@@ -631,7 +631,7 @@ void Render() {
     chicken_mesh->useRGBAColour = false;
     meshArray.push_back(chicken_mesh);
 
-    // Reads scene descripion files for positioning and other info
+    // Reads scene descripion files for positioning and translation info
     ReadSceneDescription();
 
     // FMOD channel init
@@ -685,6 +685,9 @@ void Update() {
     
     // Lighting
     ManageLights();
+
+    // Load the internet radio
+    sounds_object->LoadInternetSounds();
 
     float ratio;
     int width, height;
@@ -780,6 +783,9 @@ void Update() {
             std::cout << "Model not found." << std::endl;
         }
     }
+
+    // Dear ImGUI
+    sounds_object->LoadGui();
 
     glfwSwapBuffers(window);
     glfwPollEvents();

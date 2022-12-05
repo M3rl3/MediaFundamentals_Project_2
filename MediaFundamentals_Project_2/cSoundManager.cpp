@@ -363,3 +363,41 @@ bool cSoundManager::UpdateVolume(FMOD::Channel* channel, const float new_volume)
 {
 	return channel->setVolume(new_volume);
 }
+
+FMOD::System* cSoundManager::GetSystemObject() {
+	return this->fmod_sys;
+}
+
+bool cSoundManager::LoadInternetSound(const std::string& name, const std::string& link, const int mode)
+{
+	FMOD::Sound* sound;
+	last_result = fmod_sys->createSound(link.c_str(), mode, nullptr, &sound);
+	if (last_result != FMOD_OK) {
+		std::cout << "FMOD creating inet sound(s) exit with error: " << FMOD_ErrorString(last_result) << std::endl;
+		return 1;
+	}
+
+	inetSounds.try_emplace(name, sound);
+
+	return false;
+}
+
+bool cSoundManager::PlayInternetSound(const std::string& sound_name, glm::vec3 position, float max_distance, FMOD::Channel** channel)
+{
+	assert(fmod_sys && "no system object");
+
+	assert(inetSounds.find(sound_name) != inetSounds.end() && "sound not found");
+	const auto sound = inetSounds.find(sound_name);
+	if (sound == inetSounds.end())
+	{
+		return false;
+	}
+
+	last_result = fmod_sys->playSound(sound->second, nullptr, false, channel);
+	/*if (last_result != FMOD_OK) {
+		std::cout << "FMOD playing inet sound(s) exit with error: " << FMOD_ErrorString(last_result) << std::endl;
+		return 1;
+	}*/
+
+	return false;
+}

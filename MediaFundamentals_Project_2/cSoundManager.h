@@ -27,6 +27,7 @@ public:
 	};
 
 	std::map<std::string, FMOD::Sound*> sounds;
+	std::map<std::string, FMOD::Sound*> inetSounds;
 	FMOD::Channel* channel;
 
 	bool Initialize();
@@ -55,6 +56,11 @@ public:
 	bool PlaySounds(const std::string& sound_name, glm::vec3 position, float max_distance, FMOD::Channel** channel);
 	bool UpdateSoundPosition(FMOD::Channel* channel, const glm::vec3 position);
 	bool UpdateVolume(FMOD::Channel* channel, const float new_volume);
+
+	bool LoadInternetSound(const std::string& name, const std::string& link, const int mode);
+	bool PlayInternetSound(const std::string& inet_sound_name, glm::vec3 position, float max_distance, FMOD::Channel** channel);
+
+	FMOD::System* GetSystemObject();
 
 private:
 

@@ -1,9 +1,18 @@
 #include "SoundInfo.h"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 #include <iostream>
 #include <fstream>
 
 #include <FMOD/fmod.hpp>
+
+char classic_rock_url[] = "http://78.129.202.200:8040";
+char celtic_url[] = "http://192.111.140.11:8058";
+char country_url[] = "http://216.235.89.162/1976_128.mp3";
+char bbc_url[] = "http://stream.live.vc.bbcmedia.co.uk/bbc_radio_one";
 
 SoundInfo::SoundInfo() {
 	soundMan = new cSoundManager();
@@ -13,7 +22,18 @@ SoundInfo::~SoundInfo() {
 
 }
 
-void SoundInfo::Initialize() {
+void SoundInfo::Initialize(GLFWwindow* window, const char* glsl_version) {
+
+	// Init dear ImGUI	
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+
+	// Setup Platform/Renderer bindings
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+	ImGui::StyleColorsDark();		//dark theme
+
 	if (!soundMan->Initialize()) {
 		std::cout << "Error: Failed to initalize FMOD." << std::endl;
 	}
@@ -55,8 +75,111 @@ void SoundInfo::LoadSounds() {
 	soundMan->LoadSounds("my_dark_disquiet", soundFiles[5], flags);
 }
 
+void SoundInfo::LoadInternetSounds() {
+	
+	/*result = soundMan->GetSystemObject()->createSound(bbc_url, FMOD_CREATESTREAM | FMOD_NONBLOCKING, nullptr, &mySound);
+	assert(!result);
+
+	result = mySound->getOpenState(&openstate, &percentage, &is_starving, nullptr);
+	assert(!result);*/
+
+	if (soundMan->LoadInternetSound("bbc_radio", country_url, FMOD_CREATESTREAM | FMOD_NONBLOCKING)) {
+		std::cout << "Loading inet sound failed." << std::endl;
+	}
+	const auto bbc_radio = soundMan->inetSounds["bbc_radio"];
+	result = bbc_radio->getOpenState(&openstate, &percentage, &is_starving, nullptr);
+
+	/*result = mySound->getOpenState(&openstate, &percentage, &is_starving, nullptr);*/
+
+	// assert(!result);
+
+	if (channel[0]) {
+		while (bbc_radio->getTag(nullptr, -1, &tag) == FMOD_OK)
+		{
+			if (tag.datatype == FMOD_TAGDATATYPE_STRING)
+			{
+				printf(tag_string[tag_index], "%s = %s (%d bytes)",
+					tag.name, static_cast<char*>(tag.data), tag.datalen);
+
+				tag_index = (tag_index + 1) % NUMBER_OF_TAGS;
+			}
+			else
+			{
+				float frequency = *static_cast<float*>(tag.data);
+				result = channel[0]->setFrequency(frequency);
+				assert(!result);
+				std::cout << frequency;
+			}
+			
+		}
+
+		result = channel[0]->getPaused(&is_paused);
+		assert(!result);
+		result = channel[0]->isPlaying(&is_playing);
+		assert(!result);
+		result = channel[0]->getPosition(&position, FMOD_TIMEUNIT_MS);
+		assert(!result);
+
+		result = channel[0]->setMute(is_starving);
+		assert(!result);
+	}
+	else
+	{
+		//soundMan->GetSystemObject()->playSound(bbc_radio, nullptr, false, &myChannel);
+		soundMan->PlayInternetSound("bbc_radio", glm::vec3(0.f), NULL, &channel[0]);
+		channel[0]->setVolume(25.f);
+		//soundMan->GetSystemObject()->playSound(sound[0], nullptr, false, &channel[0]);
+	}
+
+	if (openstate == FMOD_OPENSTATE_CONNECTING)
+	{
+		current_state = "Connecting...";
+	}
+	else if (openstate == FMOD_OPENSTATE_BUFFERING)
+	{
+		current_state = "Buffering...";
+	}
+	else if (is_paused)
+	{
+		current_state = "Paused";
+	}
+	else
+	{
+		current_state = "Playing";
+	}
+}
+
+void SoundInfo::LoadGui() {
+
+	// Start a new frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Internet Radio");
+	/*if (ImGui::Button("Play")) {
+		soundMan->PlaySounds("my_dark_disquiet", "sounds");
+		soundMan->GetSystemObject()->playSound(sound[0], nullptr, false, &channel[0]);
+	}*/
+	if (ImGui::Button("Pause")) {
+		channel[0]->setPaused(!is_paused);
+		is_paused = !is_paused;
+	}
+	ImGui::Text(current_state);
+	ImGui::End();
+
+	// Render imgui stuff to screen
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+// Gracefully close everything down
 void SoundInfo::Shutdown() {
 	soundFiles.clear();
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	soundMan->ShutDown();
 	delete soundMan;	
