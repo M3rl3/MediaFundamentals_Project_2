@@ -635,11 +635,11 @@ void Render() {
     ReadSceneDescription();
 
     // FMOD channel init
-    {
-        FMOD::Channel* channel;
-        sounds_object->GetSoundManager()->PlaySounds("engine", tesla_cybertruck_mesh->position, 0.05f, &channel);
-        tesla_cybertruck_mesh->SetAttachedSound(channel);
-    }
+ 
+   /* FMOD::Channel* cybertruck_radio;
+    sounds_object->GetSoundManager()->PlaySounds("engine", tesla_cybertruck_mesh->position, 0.05f, &cybertruck_radio);
+    tesla_cybertruck_mesh->SetAttachedSound(cybertruck_radio);*/
+ 
     
     {
         FMOD::Channel* channel;
@@ -687,7 +687,7 @@ void Update() {
     ManageLights();
 
     // Load the internet radio
-    sounds_object->LoadInternetSounds();
+    sounds_object->LoadInternetSounds(tesla_cybertruck_mesh->position);
 
     float ratio;
     int width, height;
@@ -785,7 +785,7 @@ void Update() {
     }
 
     // Dear ImGUI
-    sounds_object->LoadGui();
+    sounds_object->LoadGui(tesla_cybertruck_mesh->position);
 
     glfwSwapBuffers(window);
     glfwPollEvents();

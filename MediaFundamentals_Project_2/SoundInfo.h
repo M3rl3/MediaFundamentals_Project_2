@@ -40,8 +40,8 @@ public:
 	void CreateChannels();
 	void ReadFromFile();
 	void LoadSounds();
-	void LoadInternetSounds();
-	void LoadGui();
+	void LoadInternetSounds(glm::vec3 vecPosition);
+	void LoadGui(glm::vec3 position);
 	void StopAllSounds();
 
 	cSoundManager* soundMan = nullptr;
@@ -55,5 +55,8 @@ public:
 	FMOD_RESULT result = FMOD_OK;
 
 	std::vector<std::string> soundFiles;
+	std::vector<std::string> soundURLs;
+
+	int currentURL = 0;
 
 };

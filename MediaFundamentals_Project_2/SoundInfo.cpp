@@ -75,26 +75,24 @@ void SoundInfo::LoadSounds() {
 	soundMan->LoadSounds("my_dark_disquiet", soundFiles[5], flags);
 }
 
-void SoundInfo::LoadInternetSounds() {
-	
-	/*result = soundMan->GetSystemObject()->createSound(bbc_url, FMOD_CREATESTREAM | FMOD_NONBLOCKING, nullptr, &mySound);
+void SoundInfo::LoadInternetSounds(glm::vec3 vecPosition) {
+
+	soundMan->LoadInternetSound("bbc_radio", bbc_url, FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
+	soundMan->LoadInternetSound("classic_rock", classic_rock_url, FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
+	soundMan->LoadInternetSound("country", country_url, FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
+	soundMan->LoadInternetSound("celtic", celtic_url, FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
+
+	soundURLs.push_back("bbc_radio");
+	soundURLs.push_back("classic_rock");
+	soundURLs.push_back("country");
+	soundURLs.push_back("celtic");
+
+	const auto radio = soundMan->inetSounds[soundURLs[currentURL]];
+	result = radio->getOpenState(&openstate, &percentage, &is_starving, nullptr);
 	assert(!result);
 
-	result = mySound->getOpenState(&openstate, &percentage, &is_starving, nullptr);
-	assert(!result);*/
-
-	if (soundMan->LoadInternetSound("bbc_radio", country_url, FMOD_CREATESTREAM | FMOD_NONBLOCKING)) {
-		std::cout << "Loading inet sound failed." << std::endl;
-	}
-	const auto bbc_radio = soundMan->inetSounds["bbc_radio"];
-	result = bbc_radio->getOpenState(&openstate, &percentage, &is_starving, nullptr);
-
-	/*result = mySound->getOpenState(&openstate, &percentage, &is_starving, nullptr);*/
-
-	// assert(!result);
-
 	if (channel[0]) {
-		while (bbc_radio->getTag(nullptr, -1, &tag) == FMOD_OK)
+		while (radio->getTag(nullptr, -1, &tag) == FMOD_OK)
 		{
 			if (tag.datatype == FMOD_TAGDATATYPE_STRING)
 			{
@@ -125,10 +123,8 @@ void SoundInfo::LoadInternetSounds() {
 	}
 	else
 	{
-		//soundMan->GetSystemObject()->playSound(bbc_radio, nullptr, false, &myChannel);
-		soundMan->PlayInternetSound("bbc_radio", glm::vec3(0.f), NULL, &channel[0]);
+		soundMan->PlayInternetSound(soundURLs[currentURL], vecPosition, 0.25f, &channel[0]);
 		channel[0]->setVolume(25.f);
-		//soundMan->GetSystemObject()->playSound(sound[0], nullptr, false, &channel[0]);
 	}
 
 	if (openstate == FMOD_OPENSTATE_CONNECTING)
@@ -149,7 +145,7 @@ void SoundInfo::LoadInternetSounds() {
 	}
 }
 
-void SoundInfo::LoadGui() {
+void SoundInfo::LoadGui(glm::vec3 position) {
 
 	// Start a new frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -157,16 +153,59 @@ void SoundInfo::LoadGui() {
 	ImGui::NewFrame();
 
 	ImGui::Begin("Internet Radio");
-	/*if (ImGui::Button("Play")) {
-		soundMan->PlaySounds("my_dark_disquiet", "sounds");
-		soundMan->GetSystemObject()->playSound(sound[0], nullptr, false, &channel[0]);
-	}*/
+	ImGui::Text("Currently attached to: tesla_cybertruck_mesh");
+	ImGui::Text("Now playing: ");
+	ImGui::Text(soundURLs[currentURL].c_str());
 	if (ImGui::Button("Pause")) {
 		channel[0]->setPaused(!is_paused);
 		is_paused = !is_paused;
 	}
+	if (ImGui::Button("Previous")) {
+		currentURL--;
+		if (currentURL < 0) {
+			currentURL = soundURLs.size() - 1;
+		}
+		channel[0]->setPaused(true);
+		soundMan->PlayInternetSound(soundURLs[currentURL], position, 0.25f, &channel[0]);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Next")) {
+		currentURL++;
+		if (currentURL > soundURLs.size() - 1) {
+			currentURL = 0;
+		}
+		channel[0]->setPaused(true);
+		soundMan->PlayInternetSound(soundURLs[currentURL], position, 0.25f, &channel[0]);
+	}
+
+	ImGui::Text("Time: ");
+	ImGui::SameLine();
+	std::string time0 = std::to_string(this->position / 1000 / 60);
+	ImGui::Text(time0.c_str());
+	ImGui::SameLine();
+	ImGui::Text(":");
+	ImGui::SameLine();
+	std::string time1 = std::to_string(this->position / 100 % 60);
+	ImGui::Text(time1.c_str());
+	ImGui::SameLine();
+	ImGui::Text(":");
+	ImGui::SameLine();
+	std::string time2 = std::to_string(this->position / 10 % 100);
+	ImGui::Text(time2.c_str());
+
+	ImGui::Text("Current state: ");
+	ImGui::SameLine();
 	ImGui::Text(current_state);
+
+	ImGui::Text("Buffer percentage: ");
+	ImGui::SameLine();
+	std::string temp = std::to_string(percentage);
+	ImGui::Text(temp.c_str());
+
 	ImGui::End();
+
+	// Sound Position
+	soundMan->UpdateSoundPosition(channel[0], position);
 
 	// Render imgui stuff to screen
 	ImGui::Render();

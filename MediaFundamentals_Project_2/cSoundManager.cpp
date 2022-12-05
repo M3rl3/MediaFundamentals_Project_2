@@ -393,11 +393,26 @@ bool cSoundManager::PlayInternetSound(const std::string& sound_name, glm::vec3 p
 		return false;
 	}
 
-	last_result = fmod_sys->playSound(sound->second, nullptr, false, channel);
+	last_result = fmod_sys->playSound(sound->second, nullptr, true, channel);
 	/*if (last_result != FMOD_OK) {
 		std::cout << "FMOD playing inet sound(s) exit with error: " << FMOD_ErrorString(last_result) << std::endl;
 		return 1;
 	}*/
+
+	FMOD_VECTOR fmod_sound_position;
+	fmod_sound_position.x = position.x;
+	fmod_sound_position.y = position.y;
+	fmod_sound_position.z = position.z;
+
+	(*channel)->set3DAttributes(&fmod_sound_position, nullptr);
+
+	//min distance to hear @ max volume
+	//max distance where the attenuation stops
+	(*channel)->set3DMinMaxDistance(max_distance, 10000.0f);
+
+	(*channel)->setPaused(false);
+
+	return true;
 
 	return false;
 }
