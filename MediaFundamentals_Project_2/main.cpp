@@ -15,6 +15,7 @@
 #include "cShaderManager/cShaderManager.h"
 #include "cVAOManager/cVAOManager.h"
 
+#include <Windows.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -230,14 +231,14 @@ void Initialize() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(800, 600, "Mid-Term", NULL, NULL);
+    window = glfwCreateWindow(1366, 768, "Mid-Term", NULL, NULL);
     if (!window) {
         std::cerr << "Window creation failed." << std::endl;
         glfwTerminate();
         return;
     }
 
-    //key-callback
+    // key-callback
     glfwSetKeyCallback(window, KeyCallback);
     glfwSetErrorCallback(ErrorCallback);
 
@@ -1159,6 +1160,7 @@ int main(int argc, char** argv) {
     }
 
     Shutdown();
+    Sleep(50);
 
     return 0;
 }

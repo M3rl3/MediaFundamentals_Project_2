@@ -58,6 +58,7 @@ public:
 
 	bool LoadInternetSound(const std::string& name, const std::string& link, const int mode);
 	bool PlayInternetSound(const std::string& inet_sound_name, glm::vec3 position, float max_distance, FMOD::Channel** channel);
+	bool PlayInternetSound(FMOD::Sound* inet_sound, glm::vec3 position, float max_distance, FMOD::Channel** channel);
 
 	float GetVolume(FMOD::Channel* channel, float* volume);
 	float SetVolume(FMOD::Channel* channel, float volume);

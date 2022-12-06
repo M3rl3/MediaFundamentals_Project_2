@@ -9,11 +9,6 @@
 
 #include <FMOD/fmod.hpp>
 
-char classic_rock_url[] = "http://78.129.202.200:8040";
-char celtic_url[] = "http://192.111.140.11:8058";
-char country_url[] = "http://216.235.89.162/1976_128.mp3";
-char bbc_url[] = "http://stream.live.vc.bbcmedia.co.uk/bbc_radio_one";
-
 SoundInfo::SoundInfo() {
 	soundMan = new cSoundManager();
 }
@@ -39,6 +34,7 @@ void SoundInfo::Initialize(GLFWwindow* window, const char* glsl_version) {
 	}
 
 	ReadFromFile();
+	ReadFromURLFile();
 	CreateChannels();
 	CreateDSPs();
 	LoadSounds();
@@ -50,6 +46,16 @@ void SoundInfo::ReadFromFile() {
 
 	while (readFile >> input) {
 		soundFiles.push_back(input);
+		readIndex++;
+	}
+}
+
+void SoundInfo::ReadFromURLFile() {
+	std::ifstream readFile("readURL.txt");
+	std::string input;
+
+	while (readFile >> input) {
+		soundURL.push_back(input);
 		readIndex++;
 	}
 }
@@ -70,6 +76,10 @@ void SoundInfo::CreateDSPs() {
 	soundMan->CreateDSPEffect("Distortion", FMOD_DSP_TYPE_DISTORTION, 1.f);
 	soundMan->CreateDSPEffect("Echo", FMOD_DSP_TYPE_ECHO, 250.f);
 	soundMan->CreateDSPEffect("Reverb", FMOD_DSP_TYPE_SFXREVERB, 500000000.f * 500000000.f);
+	soundMan->CreateDSPEffect("Fader", FMOD_DSP_TYPE_FADER, 100.f);
+	soundMan->CreateDSPEffect("Chorus", FMOD_DSP_TYPE_CHORUS, 500.f);
+	soundMan->CreateDSPEffect("Delay", FMOD_DSP_TYPE_DELAY, 10000.f);
+	soundMan->CreateDSPEffect("Tremolo", FMOD_DSP_TYPE_TREMOLO, 1.f);
 }
 
 void SoundInfo::LoadSounds() {
@@ -85,10 +95,10 @@ void SoundInfo::LoadSounds() {
 
 void SoundInfo::LoadInternetSounds(glm::vec3 vecPosition) {
 
-	soundMan->LoadInternetSound("bbc_radio", bbc_url, FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
-	soundMan->LoadInternetSound("classic_rock", classic_rock_url, FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
-	soundMan->LoadInternetSound("country", country_url, FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
-	soundMan->LoadInternetSound("celtic", celtic_url, FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
+	soundMan->LoadInternetSound("bbc_radio", soundURL[0], FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
+	soundMan->LoadInternetSound("classic_rock", soundURL[1], FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
+	soundMan->LoadInternetSound("country", soundURL[2], FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
+	soundMan->LoadInternetSound("celtic", soundURL[3], FMOD_3D | FMOD_CREATESTREAM | FMOD_NONBLOCKING);
 
 	soundURLs.push_back("bbc_radio");
 	soundURLs.push_back("classic_rock");
@@ -114,7 +124,6 @@ void SoundInfo::LoadInternetSounds(glm::vec3 vecPosition) {
 				float frequency = *static_cast<float*>(tag.data);
 				result = channel[0]->setFrequency(frequency);
 				assert(!result);
-				std::cout << frequency;
 			}
 		}
 
@@ -157,8 +166,11 @@ void SoundInfo::LoadGui(glm::vec3 position) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
+	// The actual gui
 	ImGui::Begin("Internet Radio");
 	ImGui::Text("Currently attached to: tesla_cybertruck_mesh");
+
+	ImGui::Text(" ");
 	ImGui::Text("Now playing: ");
 	ImGui::Text(soundURLs[currentURL].c_str());
 	if (ImGui::Button("Pause")) {
@@ -201,14 +213,14 @@ void SoundInfo::LoadGui(glm::vec3 position) {
 	std::string time2 = std::to_string(this->position / 10 % 100);
 	ImGui::Text(time2.c_str());
 
-	ImGui::Text("Current state: ");
-	ImGui::SameLine();
-	ImGui::Text(current_state);
-
 	ImGui::Text("Buffer percentage: ");
 	ImGui::SameLine();
 	std::string temp = std::to_string(percentage);
 	ImGui::Text(temp.c_str());
+
+	ImGui::Text("Current state: ");
+	ImGui::SameLine();
+	ImGui::Text(current_state);
 
 	ImGui::Text(" ");
 	float volume = 0.f;
@@ -234,6 +246,21 @@ void SoundInfo::LoadGui(glm::vec3 position) {
 	ImGui::SameLine();
 	if (ImGui::Button("Reverb")) {
 		soundMan->AddDSPEffect(channel[0], "Reverb");
+	}
+	if (ImGui::Button("Fader")) {
+		soundMan->AddDSPEffect(channel[0], "Fader");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Chorus")) {
+		soundMan->AddDSPEffect(channel[0], "Chorus");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Delay")) {
+		soundMan->AddDSPEffect(channel[0], "Delay");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Tremolo")) {
+		soundMan->AddDSPEffect(channel[0], "Tremolo");
 	}
 
 	ImGui::Text(" ");

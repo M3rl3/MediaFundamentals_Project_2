@@ -140,6 +140,7 @@
   <ItemGroup>
     <Text Include="cameraEye.txt" />
     <Text Include="readFile.txt" />
+    <Text Include="readURL.txt" />
     <Text Include="sceneDescription.txt" />
     <Text Include="soundFiles.txt" />
   </ItemGroup>

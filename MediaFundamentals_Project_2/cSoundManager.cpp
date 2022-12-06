@@ -55,7 +55,7 @@ void cSoundManager::ShutDown() {
 	channel_groups.clear();
 
 	if (fmod_sys) {
-		fmod_sys->release();		// Causes an exception, for some reason
+		// fmod_sys->release();		// Causes an exception, for some reason
 		fmod_sys = nullptr;
 		delete fmod_sys;
 	}
@@ -395,10 +395,6 @@ bool cSoundManager::PlayInternetSound(const std::string& sound_name, glm::vec3 p
 	}
 
 	last_result = fmod_sys->playSound(sound->second, nullptr, true, channel);
-	/*if (last_result != FMOD_OK) {
-		std::cout << "FMOD playing inet sound(s) exit with error: " << FMOD_ErrorString(last_result) << std::endl;
-		return 1;
-	}*/
 
 	FMOD_VECTOR fmod_sound_position;
 	fmod_sound_position.x = position.x;
@@ -407,9 +403,35 @@ bool cSoundManager::PlayInternetSound(const std::string& sound_name, glm::vec3 p
 
 	(*channel)->set3DAttributes(&fmod_sound_position, nullptr);
 
-	//min distance to hear @ max volume
-	//max distance where the attenuation stops
-	(*channel)->set3DMinMaxDistance(max_distance, 10000.0f);
+	(*channel)->set3DMinMaxDistance(
+									max_distance,	// min distance to hear at max volume
+									10000.0f		// max distance where the attenuation stops
+									);
+
+	(*channel)->setPaused(false);
+
+	return true;
+}
+
+bool cSoundManager::PlayInternetSound(FMOD::Sound* inet_sound, glm::vec3 position, float max_distance, FMOD::Channel** channel)
+{
+	assert(fmod_sys && "no system object");
+	
+	const auto sound = inet_sound;
+
+	last_result = fmod_sys->playSound(sound, nullptr, true, channel);
+
+	FMOD_VECTOR fmod_sound_position;
+	fmod_sound_position.x = position.x;
+	fmod_sound_position.y = position.y;
+	fmod_sound_position.z = position.z;
+
+	(*channel)->set3DAttributes(&fmod_sound_position, nullptr);
+
+	(*channel)->set3DMinMaxDistance(
+									max_distance,	// min distance to hear at max volume
+									10000.0f		// max distance where the attenuation stops
+									);
 
 	(*channel)->setPaused(false);
 

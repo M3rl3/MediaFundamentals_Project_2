@@ -37,6 +37,7 @@ public:
 	void CreateChannels();
 	void CreateDSPs();
 	void ReadFromFile();
+	void ReadFromURLFile();
 	void LoadSounds();
 	void LoadInternetSounds(glm::vec3 vecPosition);
 	void LoadGui(glm::vec3 position);
@@ -54,6 +55,7 @@ public:
 
 	std::vector<std::string> soundFiles;
 	std::vector<std::string> soundURLs;
+	std::vector<std::string> soundURL;
 
 	int currentURL = 0;
 };
