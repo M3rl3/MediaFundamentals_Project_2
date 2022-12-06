@@ -634,13 +634,7 @@ void Render() {
     // Reads scene descripion files for positioning and translation info
     ReadSceneDescription();
 
-    // FMOD channel init
- 
-   /* FMOD::Channel* cybertruck_radio;
-    sounds_object->GetSoundManager()->PlaySounds("engine", tesla_cybertruck_mesh->position, 0.05f, &cybertruck_radio);
-    tesla_cybertruck_mesh->SetAttachedSound(cybertruck_radio);*/
- 
-    
+    // FMOD local audio channels init
     {
         FMOD::Channel* channel;
         sounds_object->GetSoundManager()->PlaySounds("ambulance", ambulance_mesh->position, 0.025f, &channel);
@@ -836,7 +830,8 @@ void Shutdown() {
     delete window;
 
     glfwTerminate();
-    exit(EXIT_SUCCESS);
+
+    return;
 }
 
 void ReadFromFile() {

@@ -40,6 +40,7 @@ void SoundInfo::Initialize(GLFWwindow* window, const char* glsl_version) {
 
 	ReadFromFile();
 	CreateChannels();
+	CreateDSPs();
 	LoadSounds();
 }
 
@@ -62,6 +63,13 @@ void SoundInfo::CreateChannels() {
 	soundMan->SetParentChannel("sfx", "master");
 	soundMan->SetChannelGroupVolume("sounds", 0.5f);
 	soundMan->SetChannelGroupVolume("sfx", 0.5f);
+}
+
+void SoundInfo::CreateDSPs() {
+	soundMan->CreateDSPEffect("PitchShift", FMOD_DSP_TYPE_PITCHSHIFT, 2.f);
+	soundMan->CreateDSPEffect("Distortion", FMOD_DSP_TYPE_DISTORTION, 1.f);
+	soundMan->CreateDSPEffect("Echo", FMOD_DSP_TYPE_ECHO, 250.f);
+	soundMan->CreateDSPEffect("Reverb", FMOD_DSP_TYPE_SFXREVERB, 500000000.f * 500000000.f);
 }
 
 void SoundInfo::LoadSounds() {
@@ -108,7 +116,6 @@ void SoundInfo::LoadInternetSounds(glm::vec3 vecPosition) {
 				assert(!result);
 				std::cout << frequency;
 			}
-			
 		}
 
 		result = channel[0]->getPaused(&is_paused);
@@ -117,14 +124,12 @@ void SoundInfo::LoadInternetSounds(glm::vec3 vecPosition) {
 		assert(!result);
 		result = channel[0]->getPosition(&position, FMOD_TIMEUNIT_MS);
 		assert(!result);
-
 		result = channel[0]->setMute(is_starving);
 		assert(!result);
 	}
 	else
 	{
 		soundMan->PlayInternetSound(soundURLs[currentURL], vecPosition, 0.25f, &channel[0]);
-		channel[0]->setVolume(25.f);
 	}
 
 	if (openstate == FMOD_OPENSTATE_CONNECTING)
@@ -160,6 +165,8 @@ void SoundInfo::LoadGui(glm::vec3 position) {
 		channel[0]->setPaused(!is_paused);
 		is_paused = !is_paused;
 	}
+	ImGui::Text(" ");
+	ImGui::Text("Station Controls: ");
 	if (ImGui::Button("Previous")) {
 		currentURL--;
 		if (currentURL < 0) {
@@ -178,6 +185,7 @@ void SoundInfo::LoadGui(glm::vec3 position) {
 		soundMan->PlayInternetSound(soundURLs[currentURL], position, 0.25f, &channel[0]);
 	}
 
+	ImGui::Text(" ");
 	ImGui::Text("Time: ");
 	ImGui::SameLine();
 	std::string time0 = std::to_string(this->position / 1000 / 60);
@@ -202,6 +210,34 @@ void SoundInfo::LoadGui(glm::vec3 position) {
 	std::string temp = std::to_string(percentage);
 	ImGui::Text(temp.c_str());
 
+	ImGui::Text(" ");
+	float volume = 0.f;
+	soundMan->GetVolume(channel[0], &volume);
+	volume *= 100;
+	ImGui::SliderFloat("Radio Volume", &volume, 0.f, 100.f, "%.0f");
+	volume /= 100;
+	soundMan->SetVolume(channel[0], volume);
+
+	ImGui::Text(" ");
+	ImGui::Text("DSP Effects: ");
+	if (ImGui::Button("Pitch Shift")) {
+		soundMan->AddDSPEffect(channel[0], "PitchShift");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Distortion")) {
+		soundMan->AddDSPEffect(channel[0], "Distortion");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Echo")) {
+		soundMan->AddDSPEffect(channel[0], "Echo");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Reverb")) {
+		soundMan->AddDSPEffect(channel[0], "Reverb");
+	}
+
+	ImGui::Text(" ");
+	ImGui::Text("Press 'F' to teleport listener to the mesh with attached radio.");
 	ImGui::End();
 
 	// Sound Position
@@ -215,13 +251,26 @@ void SoundInfo::LoadGui(glm::vec3 position) {
 // Gracefully close everything down
 void SoundInfo::Shutdown() {
 	soundFiles.clear();
+	soundURLs.clear();
+
+	for (int i = 0; i < NUM_OF_SOUNDS; i++) {
+		sound[i]->release();
+		sound[i] = nullptr;
+		delete sound[i];
+	}
+
+	for (int i = 0; i < NUM_OF_SOUNDS; i++) {
+		channel[i] = nullptr;
+		delete channel[i];
+	}
+
+	soundMan->ShutDown();
+	soundMan = nullptr;
+	delete soundMan;
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
-
-	soundMan->ShutDown();
-	delete soundMan;	
 }
 
 void SoundInfo::StopAllSounds() {
@@ -240,5 +289,5 @@ void SoundInfo::StopAllSounds() {
 }
 
 cSoundManager* SoundInfo::GetSoundManager() {
-	return soundMan;
+	return this->soundMan;
 }

@@ -26,9 +26,6 @@ class SoundInfo {
 	bool is_starving = false;
 	const char* current_state = "Stopped";
 
-	FMOD::Channel* myChannel;
-	FMOD::Sound* mySound;
-
 public:
 
 	SoundInfo();
@@ -38,6 +35,7 @@ public:
 	void Shutdown();
 
 	void CreateChannels();
+	void CreateDSPs();
 	void ReadFromFile();
 	void LoadSounds();
 	void LoadInternetSounds(glm::vec3 vecPosition);
@@ -58,5 +56,4 @@ public:
 	std::vector<std::string> soundURLs;
 
 	int currentURL = 0;
-
 };

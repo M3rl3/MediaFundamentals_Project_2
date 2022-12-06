@@ -44,13 +44,18 @@ void cSoundManager::ShutDown() {
 	}
 	sounds.clear();
 
+	for (auto i = inetSounds.begin(); i != inetSounds.end(); i++) {
+		i->second->release();
+	}
+	inetSounds.clear();
+
 	for (auto i = channel_groups.begin(); i != channel_groups.end(); i++) {
 		i->second->current_grp->release();
 	}
 	channel_groups.clear();
 
 	if (fmod_sys) {
-		fmod_sys->release();
+		fmod_sys->release();		// Causes an exception, for some reason
 		fmod_sys = nullptr;
 		delete fmod_sys;
 	}
@@ -364,10 +369,6 @@ bool cSoundManager::UpdateVolume(FMOD::Channel* channel, const float new_volume)
 	return channel->setVolume(new_volume);
 }
 
-FMOD::System* cSoundManager::GetSystemObject() {
-	return this->fmod_sys;
-}
-
 bool cSoundManager::LoadInternetSound(const std::string& name, const std::string& link, const int mode)
 {
 	FMOD::Sound* sound;
@@ -413,6 +414,34 @@ bool cSoundManager::PlayInternetSound(const std::string& sound_name, glm::vec3 p
 	(*channel)->setPaused(false);
 
 	return true;
+}
 
-	return false;
+float cSoundManager::GetVolume(FMOD::Channel* channel, float* volume) {
+
+	return channel->getVolume(volume);
+}
+
+float cSoundManager::SetVolume(FMOD::Channel* channel, float volume)
+{
+	return channel->setVolume(volume);
+}
+
+bool cSoundManager::AddDSPEffect(FMOD::Channel* channel, const std::string& effect_name) {
+	const auto dsp_effect_iterator = dsps.find(effect_name);
+	if (dsp_effect_iterator == dsps.end())
+	{
+		return false;
+	}
+
+	int num_dsp;
+	channel->getNumDSPs(&num_dsp);
+
+
+	channel->addDSP(num_dsp, dsp_effect_iterator->second);
+
+	return true;
+}
+
+FMOD::System* cSoundManager::GetSystemObject() {
+	return this->fmod_sys;
 }
